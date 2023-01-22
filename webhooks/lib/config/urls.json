@@ -1,0 +1,4 @@
+{
+    "vopay": "https://earthnode-dev.vopay.com/api/v2",
+    "vopay_webhook": "https://275a-2001-569-7e61-800-51e9-50d2-66cf-a17.ngrok.io/ploutos-pay-backend/us-central1/vopayWebhook"
+}
