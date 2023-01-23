@@ -1,5 +1,6 @@
 {
   "scripts": {
+    "build:watch": "(cd api && npm run build:watch &) && (cd webhooks && npm run build:watch)",
     "build": "cd api && npm run build --watch",
     "test": "jest --coverage"
   },

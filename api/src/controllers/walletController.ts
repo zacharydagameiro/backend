@@ -63,7 +63,7 @@ export const getWallets = async (user: any) => {
   try {
     const walletDocs = await walletsQuery.get();
     const wallets = walletDocs.docs.map((doc) => doc.data());
-    console.log(wallets);
+
     return wallets;
   } catch (error: any) {
     throw new Error(error);

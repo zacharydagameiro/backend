@@ -1,7 +1,8 @@
 const express = require("express");
-
+const cors = require("cors");
 // api setup
 export const api = express();
+api.use(cors({ origin: true }));
 api.use(express.json());
 
 // users

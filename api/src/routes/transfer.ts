@@ -21,7 +21,9 @@ transferRouter.post(
   validate(sendTransferSchema),
   async (req: Req, res: Response) => {
     try {
-      transferController.send(req.body, "req.auth.uid");
+      console.log(req.body);
+      const transfer: Transfer = req.body;
+      transferController.send(transfer);
       res.status(201).send("success/transfer-sent");
     } catch (error: any) {
       res.status(400).send(error.message as string);

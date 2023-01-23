@@ -41,11 +41,11 @@ walletRouter.get("/", async (req: Req, res: Res) => {
 });
 
 walletRouter.get(
-  "/balance",
+  "/balance/:handle",
   validate(getBalanceSchema),
   async (req: Req, res: Res) => {
     try {
-      const wallet: Wallet = req.body;
+      const wallet: Wallet = req.params;
       const balance = await walletController.getBalance(wallet);
       return res.send({ message: "success/balance-found", balance });
     } catch (error: any) {

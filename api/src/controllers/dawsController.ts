@@ -5,7 +5,7 @@ import keys from "../config/keys.json";
 // utils
 import { getCurrentDate } from "../utils/getCurrentDate";
 
-import { getFirestore } from "firebase-admin/firestore";
+import { getFirestore, FieldValue } from "firebase-admin/firestore";
 
 export const depositACH = (ach: DepositRequest) => {
   console.log(ach);
@@ -14,7 +14,7 @@ const db = getFirestore();
 
 export const fund = async (deposit: DepositRequest) => {
   // get default account from user
-
+  console.log(deposit);
   const user = (await db.collection("users").doc(deposit.user).get()).data()!;
   const clientAccountID = (
     await db.collection("wallets").doc(user?.default_wallet).get()
@@ -65,6 +65,26 @@ export const fund = async (deposit: DepositRequest) => {
     console.log(response.data.ErrorMessage);
     throw new Error(response.data.ErrorMessage);
   }
+  console.log(response.data);
+
+  const transaction: Transaction = {
+    id: response.data.TransactionID,
+    amount: deposit.amount,
+    status: "created",
+    type: "deposit",
+    date: new Date(),
+    updated: new Date(),
+  };
+
+  const transactionRef = db.collection("transactions").doc(transaction.id!);
+  const walletRef = db.collection("wallets").doc(user?.default_wallet);
+  db.runTransaction(async (t) => {
+    t.set(transactionRef, transaction);
+    t.update(walletRef, {
+      activity: FieldValue.arrayUnion(transaction.id),
+    });
+  });
+
   return response.data;
 };
 
