@@ -49,7 +49,7 @@ export const createUser = async (user: User) => {
 // };
 
 export const updateBank = async (user: User, bank: BankDetails) => {
-  await db.collection("users").doc(user.uid!).update({
+  await db.collection("users").doc(user.claims.uid!).update({
     bank: bank,
     updated_at: new Date().toISOString(),
   });
@@ -66,6 +66,20 @@ export const deleteUser = async (uid: string) => {
   const ref = db.collection("users").doc(uid);
   try {
     await ref.delete();
+  } catch (error: any) {
+    throw new Error(error);
+  }
+};
+
+export const getFriends = async (user: User) => {
+  const ref = db.collection("users").doc(user.claims.uid!);
+  try {
+    const doc = await ref.get();
+    if (doc.exists) {
+      return doc.data()?.friends;
+    } else {
+      throw new Error("error/user-not-found");
+    }
   } catch (error: any) {
     throw new Error(error);
   }

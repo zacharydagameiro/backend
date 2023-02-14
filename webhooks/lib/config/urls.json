@@ -1,4 +1,4 @@
 {
-  "vopay": "https://earthnode-dev.vopay.com/api/v2",
-  "vopay_webhook": "https://us-central1-ploutos-pay-backend.cloudfunctions.net/vopayWebhook"
+    "vopay": "https://earthnode-dev.vopay.com/api/v2",
+    "vopay_webhook": "https://us-central1-ploutos-pay-backend.cloudfunctions.net/vopayWebhook"
 }

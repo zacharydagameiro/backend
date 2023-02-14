@@ -4,7 +4,7 @@ export function getCurrentDate(time = false): string {
 
   // Adjust the date object to Pacific Standard Time
   date.setHours(date.getHours() + timeZoneOffset);
-  console.log("date");
+
   const year = date.getFullYear();
   let month = date.getMonth() + 1;
   let day = date.getDate();
@@ -22,7 +22,7 @@ export function getCurrentDate(time = false): string {
     return `${year}-${monthS}-${dayS} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
   } else {
     // return `${year}-${monthS}-${dayS}`;
-    console.log("HI");
+
     const vancouverTime = new Date().toLocaleString("en-US", {
       timeZone: "America/Vancouver",
     });

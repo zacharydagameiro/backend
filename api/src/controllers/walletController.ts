@@ -12,9 +12,8 @@ import urls from "../config/urls.json";
 
 const db = getFirestore();
 
-export const createWallet = async (uid: UID, handle: string) => {
-  console.log("MOOOO");
-  const walletRef = db.collection("wallets").doc(handle);
+export const createWallet = async (uid: UID, data: any) => {
+  const walletRef = db.collection("wallets").doc(data.handle);
   const userRef = db.collection("users").doc(uid);
 
   try {
@@ -23,11 +22,12 @@ export const createWallet = async (uid: UID, handle: string) => {
     if ((await walletRef.get()).exists) throw new Error("error/wallet-exists");
 
     let wallet: Wallet = {
-      handle,
       owner: user,
-      balance: 0,
+      balance: "0",
       created_at: getCurrentDate(true),
     };
+    wallet.handle = data.handle;
+    wallet.name = data.name;
     const vopay_wid: WID = await createVopayWallet(wallet);
     console.log("vopay_wid", vopay_wid);
     await db.runTransaction(async (t) => {
@@ -41,12 +41,12 @@ export const createWallet = async (uid: UID, handle: string) => {
       // update the user
       if (user.default_wallet) {
         t.update(userRef, {
-          wallets: FieldValue.arrayUnion(handle),
+          wallets: FieldValue.arrayUnion(data.handle),
         });
       } else {
         t.update(userRef, {
-          default_wallet: handle,
-          wallets: FieldValue.arrayUnion(handle),
+          default_wallet: data.handle,
+          wallets: FieldValue.arrayUnion(data.handle),
         });
       }
     });
@@ -74,8 +74,6 @@ export const getBalance = async (wallet: Wallet) => {
   wallet.vid = (
     await db.collection("wallets").doc(wallet.handle!).get()
   ).data()!.vid as WID;
-
-  console.log("wallet.vid", wallet.vid);
 
   const currentDate = getCurrentDate();
   const unsigned = `${keys.vopay.api}${keys.vopay.secret}${currentDate}`;

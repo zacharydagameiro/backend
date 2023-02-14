@@ -20,6 +20,7 @@ transferRouter.post(
   "/send",
   validate(sendTransferSchema),
   async (req: Req, res: Response) => {
+    console.log("Send Transfer");
     try {
       console.log(req.body);
       const transfer: Transfer = req.body;
@@ -35,6 +36,7 @@ transferRouter.post(
   "/request",
   validate(requestTransferSchema),
   async (req: Req, res: Response) => {
+    console.log("Request Transfer");
     try {
       transferController.request(req.body, "req.auth.uid");
       res.status(201).send("success/transfer-request-sent");
@@ -48,6 +50,7 @@ transferRouter.post(
   "/request/accept/:transfer_id",
   validate(acceptTransferSchema),
   async (req: Req, res: Response) => {
+    console.log("Accept Transfer");
     try {
       transferController.accept(req.params.transfer_id, "req.auth.uid");
       res.status(201).send("success/transfer-accepted");

@@ -14,9 +14,10 @@ dawsRouter.post(
   "/fund",
   validate(achDepositSchema),
   async (req: Req, res: Res) => {
+    console.log("FUNDING ACCOUNT");
     try {
       const deposit: DepositRequest = req.body;
-      deposit.user = req.user?.uid!;
+      deposit.user = req.user?.claims.uid!;
       await fund(deposit);
       res.status(200).send("OK");
     } catch (error) {

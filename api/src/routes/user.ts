@@ -19,6 +19,7 @@ import { schema as createUserSchema } from "../schemas/createUser";
 import { schema as deleteUserSchema } from "../schemas/deleteUser";
 import { schema as onboardUserSchema } from "../schemas/onboardUser";
 import { schema as updateBankSchema } from "../schemas/updateBank";
+import { schema as getFriendsSchema } from "../schemas/getFriends";
 
 const userRouter = express.Router();
 // userRouter.use(auth);
@@ -62,6 +63,15 @@ userRouter.post("/login", async (req: Req, res: Res) => {
     const password = req.body.password;
     const token = await usersController.login(email, password);
     return res.status(200).send(token);
+  } catch (error: any) {
+    return res.status(400).send({ body: error.message as string });
+  }
+});
+
+userRouter.get("/friends", auth, async (req: Req, res: Res) => {
+  try {
+    const friends = await usersController.getFriends(req.user);
+    return res.status(200).send(friends);
   } catch (error: any) {
     return res.status(400).send({ body: error.message as string });
   }
