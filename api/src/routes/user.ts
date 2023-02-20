@@ -20,6 +20,7 @@ import { schema as deleteUserSchema } from "../schemas/deleteUser";
 import { schema as onboardUserSchema } from "../schemas/onboardUser";
 import { schema as updateBankSchema } from "../schemas/updateBank";
 import { schema as getFriendsSchema } from "../schemas/getFriends";
+import { schema as createBankSchema } from "../schemas/createBank";
 
 const userRouter = express.Router();
 // userRouter.use(auth);
@@ -56,6 +57,31 @@ userRouter.post(
     }
   }
 );
+
+userRouter.post(
+  "/banks",
+  validate(createBankSchema),
+  auth,
+  async (req: Req, res: Res) => {
+    try {
+      const bank: BankDetails = req.body as BankDetails;
+      await usersController.createBank(req.user, bank);
+      return res.status(201).send("success/user-bank-created");
+    } catch (error: any) {
+      console.log(error);
+      return res.status(400).send({ body: error.message as string });
+    }
+  }
+);
+
+userRouter.get("/banks", auth, async (req: Req, res: Res) => {
+  try {
+    const banks = await usersController.getBanks(req.user);
+    return res.status(200).send(banks);
+  } catch (error: any) {
+    return res.status(400).send({ body: error.message as string });
+  }
+});
 
 userRouter.post("/login", async (req: Req, res: Res) => {
   try {

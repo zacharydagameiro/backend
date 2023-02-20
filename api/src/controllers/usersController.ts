@@ -1,6 +1,6 @@
 // third party
 import { getAuth } from "firebase-admin/auth";
-import { getFirestore } from "firebase-admin/firestore";
+import { getFirestore, FieldValue } from "firebase-admin/firestore";
 // types
 // import { User } from "../../../interfaces/User";
 
@@ -49,10 +49,62 @@ export const createUser = async (user: User) => {
 // };
 
 export const updateBank = async (user: User, bank: BankDetails) => {
-  await db.collection("users").doc(user.claims.uid!).update({
-    bank: bank,
-    updated_at: new Date().toISOString(),
-  });
+  await db
+    .collection("users")
+    .doc(user.claims.uid!)
+    .update({
+      banks: FieldValue.arrayUnion({
+        ...bank,
+        updated_at: new Date().toISOString(),
+      }),
+    });
+};
+
+export const createBank = async (user: User, bank: BankDetails) => {
+  // transaction
+  const docRef = db.collection("users").doc(user.claims.uid!);
+  const doc = await docRef.get();
+  if (doc.exists) {
+    const defaultBank = doc.data()?.default_bank;
+    if (defaultBank === undefined) {
+      await docRef.update({
+        default_bank: bank.account_number,
+      });
+    }
+    await docRef.update({
+      banks: FieldValue.arrayUnion({
+        ...bank,
+        updated_at: new Date().toISOString(),
+      }),
+    });
+  } else {
+    throw new Error("error/user-not-found");
+  }
+  //
+
+  // await db
+  //   .collection("users")
+  //   .doc(user.claims.uid!)
+  //   .update({
+  //     banks: FieldValue.arrayUnion({
+  //       ...bank,
+  //       updated_at: new Date().toISOString(),
+  //     }),
+  //   });
+};
+
+export const getBanks = async (user: User) => {
+  const ref = db.collection("users").doc(user.claims.uid!);
+  try {
+    const doc = await ref.get();
+    if (doc.exists) {
+      return doc.data()?.banks;
+    } else {
+      throw new Error("error/user-not-found");
+    }
+  } catch (error: any) {
+    throw new Error(error);
+  }
 };
 
 export const deleteUser = async (uid: string) => {
